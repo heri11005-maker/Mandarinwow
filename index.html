@@ -1,1040 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mandarinwow · Blink-Blink Hub</title>
-    <style>
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Poppins', 'Microsoft YaHei', system-ui, sans-serif;
-            user-select: none;
-        }
-
-        html, body {
-            width: 100%;
-            background: #060414;
-            padding: 6px;
-            overflow-x: hidden;
-        }
-
-        @keyframes blinkGlow {
-            0% { text-shadow: 0 0 4px #ffd966, 0 0 12px #ffb347, 0 0 24px #ff8c00; }
-            50% { text-shadow: 0 0 10px #fff3b0, 0 0 28px #ffaa33, 0 0 42px #ff6600; }
-            100% { text-shadow: 0 0 4px #ffd966, 0 0 12px #ffb347, 0 0 24px #ff8c00; }
-        }
-
-        @keyframes floaty {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
-        }
-
-        .game-arena {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-            background: radial-gradient(circle at 20% 20%, #140e33, #070417);
-            border-radius: 36px;
-            border: 3px solid rgba(255, 215, 0, 0.65);
-            box-shadow: 0 0 36px rgba(255, 180, 40, 0.35), inset 0 0 40px rgba(255, 220, 100, 0.15);
-            padding: 22px 24px 26px;
-        }
-
-        .game-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 14px;
-            padding-bottom: 12px;
-            border-bottom: 2px dashed rgba(255, 200, 80, 0.5);
-        }
-
-        .title {
-            font-size: 2.8rem;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            background: linear-gradient(135deg, #ffe9a7, #ffc857, #ff9f1c);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: blinkGlow 2.4s infinite;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .title span {
-            font-size: 2.4rem;
-            filter: drop-shadow(0 0 12px gold);
-        }
-
-        .subtitle {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #d4c8ff;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            background: rgba(255, 215, 0, 0.15);
-            padding: 8px 20px;
-            border-radius: 60px;
-            border: 1.5px solid #ffd96677;
-        }
-
-        .intro-panel {
-            background: rgba(25, 15, 45, 0.85);
-            border-radius: 28px;
-            padding: 14px 22px;
-            margin-bottom: 18px;
-            border: 1.5px solid #ffb34766;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 12px;
-            color: #ffeac2;
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-
-        .intro-panel .hl {
-            background: linear-gradient(145deg, #ffd966, #ffaa33);
-            padding: 6px 18px;
-            border-radius: 40px;
-            font-weight: 800;
-            color: #1a0b2e;
-            box-shadow: 0 0 16px #ffaa33;
-        }
-
-        .blink-emoji {
-            font-size: 2rem;
-            animation: blinkGlow 1.6s infinite;
-        }
-
-        .level-tabs {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin-bottom: 18px;
-        }
-
-        .level-tab {
-            background: #1e1436;
-            border: 2px solid #6b59a3;
-            color: #e6dcff;
-            padding: 12px 26px;
-            border-radius: 60px;
-            font-weight: 800;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 0 #0e081a;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .level-tab.active {
-            background: linear-gradient(145deg, #ffd966, #f7b731);
-            border-color: #fff3b0;
-            color: #1d0e2e;
-            box-shadow: 0 0 24px #ffb347, 0 4px 0 #a56b00;
-            transform: translateY(-2px);
-        }
-
-        .level-tab:hover {
-            border-color: #ffd966;
-        }
-
-        .arena-grid {
-            display: grid;
-            grid-template-columns: 1.25fr 0.85fr;
-            gap: 20px;
-        }
-
-        .word-bank-panel,
-        .minigame-panel {
-            background: rgba(18, 12, 40, 0.9);
-            border-radius: 30px;
-            padding: 20px;
-            border: 1.5px solid #b491ff55;
-            box-shadow: inset 0 0 20px #8a6fd422;
-        }
-
-        .minigame-panel {
-            border-color: #ffb34755;
-            display: flex;
-            flex-direction: column;
-            min-height: 360px;
-        }
-
-        .panel-label {
-            color: #ffd966;
-            font-size: 1.3rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .word-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            min-height: 110px;
-        }
-
-        .chip {
-            background: linear-gradient(145deg, #2e2054, #170f2e);
-            border: 2.5px solid #9b80ff;
-            padding: 12px 22px;
-            border-radius: 36px;
-            color: #f0e9ff;
-            cursor: pointer;
-            box-shadow: 0 6px 0 #0c0718, 0 0 15px #a17eff88;
-            transition: all 0.1s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            min-width: 115px;
-        }
-
-        .chip .pinyin {
-            font-size: 2.25rem;
-            font-weight: 800;
-            color: #ffe9a7;
-            text-shadow: 0 0 12px #ffb347;
-            letter-spacing: 1px;
-            line-height: 1.15;
-        }
-
-        .chip .hanzi {
-            font-size: 1.65rem;
-            color: #ffffff;
-            font-weight: 700;
-            line-height: 1.15;
-        }
-
-        .chip:active:not(:disabled) {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #0c0718;
-        }
-
-        .chip:disabled,
-        .chip.used {
-            opacity: 0.25;
-            pointer-events: none;
-            filter: grayscale(0.8);
-            box-shadow: none;
-            transform: translateY(6px);
-            border-color: #444;
-        }
-
-        .sentence-slot {
-            background: #0b0720;
-            border-radius: 26px;
-            padding: 18px 20px;
-            min-height: 130px;
-            border: 3px dashed #ffb347;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 14px;
-            box-shadow: inset 0 0 28px #00000077, 0 0 18px #ffaa3344;
-            margin-bottom: 18px;
-        }
-
-        .sentence-slot .placeholder-word {
-            color: #9684bd;
-            font-size: 1.55rem;
-            font-style: italic;
-        }
-
-        .sentence-word {
-            background: #3f2d66;
-            padding: 10px 20px;
-            border-radius: 34px;
-            border: 2.5px solid #d4baff;
-            box-shadow: 0 0 16px #b78cff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            cursor: pointer;
-        }
-
-        .sentence-word .pinyin {
-            font-size: 2.25rem;
-            font-weight: 800;
-            color: #ffe9a7;
-            text-shadow: 0 0 12px #ffb347;
-            line-height: 1.15;
-        }
-
-        .sentence-word .hanzi {
-            font-size: 1.6rem;
-            color: #ffffff;
-            font-weight: 700;
-            line-height: 1.15;
-        }
-
-        .btn-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .action-btn {
-            background: #3a2b5e;
-            padding: 14px 26px;
-            border-radius: 60px;
-            font-weight: 800;
-            font-size: 1.35rem;
-            color: #ffeac2;
-            cursor: pointer;
-            box-shadow: 0 6px 0 #1a0f2e, 0 0 12px #b491ff;
-            transition: all 0.1s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border: 2px solid #ffd96688;
-        }
-
-        .action-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 #1a0f2e;
-        }
-
-        .action-btn.primary {
-            background: linear-gradient(145deg, #ffc857, #e09d1a);
-            color: #1d0e2e;
-            box-shadow: 0 6px 0 #7a4f00, 0 0 24px #ffb347;
-            border-color: #fff3b0;
-        }
-
-        .minigame-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            color: #ffd966;
-            font-size: 1.45rem;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-            padding-bottom: 12px;
-            border-bottom: 1.5px solid #ffd96644;
-            margin-bottom: 16px;
-        }
-
-        .minigame-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ffeac2;
-            text-align: center;
-            gap: 18px;
-        }
-
-        .blink-highlight {
-            animation: blinkGlow 1.2s infinite;
-            font-size: 1.9rem;
-            font-weight: 800;
-            letter-spacing: 1.5px;
-        }
-
-        .treasure-box {
-            font-size: 4.5rem;
-            filter: drop-shadow(0 0 20px gold);
-            cursor: pointer;
-        }
-
-        .rocket-stage {
-            font-size: 2.2rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .rocket-launched {
-            display: inline-block;
-            animation: floaty 1.5s infinite ease-in-out;
-        }
-
-        .feedback {
-            margin-top: 16px;
-            font-size: 1.5rem;
-            min-height: 52px;
-            font-weight: 700;
-            line-height: 1.4;
-            color: #b9ffb9;
-            text-shadow: 0 0 12px #00ff88;
-        }
-
-        .feedback.error {
-            color: #ff9c9c;
-            text-shadow: 0 0 12px #ff3333;
-        }
-
-        .feedback.hint {
-            color: #ffe082;
-            text-shadow: 0 0 12px #ffaa00;
-        }
-
-        @media (max-width: 950px) {
-            .arena-grid {
-                grid-template-columns: 1fr;
-            }
-            .title {
-                font-size: 2.1rem;
-            }
-            .chip .pinyin,
-            .sentence-word .pinyin {
-                font-size: 1.85rem;
-            }
-            .chip .hanzi,
-            .sentence-word .hanzi {
-                font-size: 1.4rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mandarinwow · Blink-Blink Hub</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 6px; background: #060414; color: #ffeac2; font-family: 'Segoe UI','Microsoft YaHei',sans-serif; }
+    .arena { max-width: 1400px; margin: auto; padding: 22px 24px 26px; border: 3px solid #ffd966a6; border-radius: 36px; background: radial-gradient(circle at 20% 20%,#140e33,#070417); }
+    .header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px; padding-bottom:12px; border-bottom:2px dashed #ffc85080; }
+    h1 { margin:0; font-size:2.8rem; background:linear-gradient(135deg,#ffe9a7,#ffc857,#ff9f1c); color:transparent; background-clip:text; }
+    .subtitle { color:#d4c8ff; letter-spacing:3px; font-weight:800; background:#ffd96626; border:1.5px solid #ffd96677; border-radius:40px; padding:8px 20px; }
+    .intro { display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin-bottom:18px; padding:14px 22px; border:1.5px solid #ffb34766; border-radius:28px; background:#190f2dd9; font-size:1.35rem; }
+    .tabs { display:flex; flex-wrap:wrap; gap:14px; margin-bottom:18px; }
+    .tab { border:2px solid #6b59a3; border-radius:60px; padding:12px 26px; background:#1e1436; color:#e6dcff; box-shadow:0 4px 0 #0e081a; cursor:pointer; font-size:1.15rem; font-weight:800; }
+    .tab.active { border-color:#fff3b0; background:linear-gradient(145deg,#ffd966,#f7b731); color:#1d0e2e; box-shadow:0 0 24px #ffb347,0 4px 0 #a56b00; }
+    .grid { display:grid; grid-template-columns:1.25fr .85fr; gap:20px; }
+    .panel { min-height:360px; padding:20px; border:1.5px solid #b491ff55; border-radius:30px; background:#120c28e6; }
+    .label { display:flex; justify-content:space-between; margin-bottom:14px; color:#ffd966; font-size:1.3rem; font-weight:800; letter-spacing:2px; }
+    .chips,.slot { display:flex; flex-wrap:wrap; gap:14px; }
+    .chips { min-height:110px; }
+    .chip,.word { min-width:115px; display:flex; flex-direction:column; align-items:center; gap:4px; border:2.5px solid #9b80ff; border-radius:36px; background:linear-gradient(145deg,#2e2054,#170f2e); color:white; cursor:pointer; box-shadow:0 6px 0 #0c0718,0 0 15px #a17eff88; }
+    .chip { padding:12px 22px; }
+    .chip.used { opacity:.25; pointer-events:none; }
+    .pinyin { color:#ffe9a7; font-size:2rem; font-weight:800; line-height:1.15; }
+    .hanzi { font-size:1.55rem; font-weight:700; }
+    .slot { min-height:130px; align-items:center; margin-bottom:18px; padding:18px 20px; border:3px dashed #ffb347; border-radius:26px; background:#0b0720; }
+    .placeholder { color:#9684bd; font-size:1.55rem; }
+    .word { padding:10px 20px; border-color:#d4baff; border-radius:34px; background:#3f2d66; }
+    .buttons { display:flex; flex-wrap:wrap; gap:12px; }
+    button.action { border:2px solid #ffd96688; border-radius:60px; padding:14px 24px; background:#3a2b5e; color:#ffeac2; box-shadow:0 6px 0 #1a0f2e; cursor:pointer; font-size:1.25rem; font-weight:800; }
+    button.primary { background:linear-gradient(145deg,#ffc857,#e09d1a); color:#1d0e2e; }
+    .feedback { min-height:52px; margin-top:16px; font-size:1.4rem; font-weight:700; }
+    .feedback.error { color:#ff9c9c; }
+    .feedback.hint { color:#ffe082; }
+    .mini { display:flex; flex-direction:column; min-height:360px; border-color:#ffb34755; }
+    .minihead { display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:16px; padding-bottom:12px; border-bottom:1.5px solid #ffd96644; color:#ffd966; font-size:1.35rem; font-weight:800; }
+    .mini-content { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; text-align:center; }
+    .cards { width:min(380px,100%); display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .card { height:96px; border:2.5px solid #ffb347; border-radius:18px; background:#1f1338; color:#fff5d6; cursor:pointer; font-size:1.25rem; font-weight:800; }
+    .card.matched { background:#2d5a2d; }
+    .treasure { font-size:4.5rem; cursor:pointer; }
+    .rocket { font-size:2.2rem; }
+    @keyframes floaty { 50% { transform:translateY(-10px); } }
+    .rocket.launched { display:inline-block; animation:floaty 1.5s infinite; }
+    @media(max-width:950px) { .grid{grid-template-columns:1fr}.pinyin{font-size:1.75rem}h1{font-size:2.1rem}.panel{min-height:300px} }
+  </style>
 </head>
 <body>
-<div class="game-arena">
-    <div class="game-header">
-        <div class="title">
-            <span>✨</span> Mandarinwow · Blink-Blink Hub <span>✨</span>
-        </div>
-        <div class="subtitle">⚡ six realms ⚡</div>
+<div class="arena">
+  <div class="header">
+    <h1>✨ Mandarinwow · Blink-Blink Hub ✨</h1>
+    <div class="subtitle">⚡ SIX REALMS ⚡</div>
+  </div>
+
+  <div class="intro">
+    <span>👁️✨</span>
+    <span>Arrange words to Mandarin!</span>
+    <span>Flip cards · 西游记 · 寻宝 · 火星</span>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-level="1">🟢 Level 1 · SVO</button>
+    <button class="tab" data-level="2">🕒 Level 2 · S + Time + V + O</button>
+    <button class="tab" data-level="3">📍 Level 3 · S + Time + Place + V + O</button>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <div class="label"><span>🔤 Word Bank · 词库</span><span id="levelIndicator">Lv.1</span></div>
+      <div id="wordBank" class="chips"></div>
+      <div class="label" style="margin-top:20px"><span>📝 Arrange · 排列句子</span></div>
+      <div id="sentenceSlot" class="slot"><span class="placeholder">点击词语… Tap words to build</span></div>
+      <div class="buttons">
+        <button type="button" class="action" id="clearBtn">🧹 清空 Clear</button>
+        <button type="button" class="action" id="listenBtn">🔊 朗读 Listen</button>
+        <button type="button" class="action primary" id="checkBtn">✅ 棡查 Check</button>
+      </div>
+      <div id="feedback" class="feedback"></div>
     </div>
 
-    <div class="intro-panel">
-        <span class="blink-emoji">👁️✨</span>
-        <span>Arrange words to Mandarin!</span>
-        <span class="hl">Level 1–3 SVO + Time + Place</span>
-        <span class="blink-emoji">👁️✨</span>
-        <span>Flip cards · 西游记 · 四天王天 · 火星</span>
+    <div class="panel mini">
+      <div class="minihead"><span id="miniTitle">🃏 西游记 · 翻牌</span><span id="miniHint">Match characters</span></div>
+      <div id="miniContent" class="mini-content"></div>
     </div>
-
-    <div class="level-tabs" role="tablist">
-        <button type="button" class="level-tab active" data-level="1">🟢 Level 1 · SVO</button>
-        <button type="button" class="level-tab" data-level="2">🕒 Level 2 · Time</button>
-        <button type="button" class="level-tab" data-level="3">📍 Level 3 · Place</button>
-    </div>
-
-    <div class="arena-grid">
-        <div class="word-bank-panel">
-            <div class="panel-label">
-                <span>🔤 Word Bank · 词库</span>
-                <span id="levelIndicator" style="color:#ffb347;">Lv.1</span>
-            </div>
-            <div id="wordBank" class="word-chips"></div>
-
-            <div class="panel-label" style="margin-top:20px;">
-                <span>📝 Arrange · 排列句子</span>
-            </div>
-            <div id="sentenceSlot" class="sentence-slot">
-                <span class="placeholder-word">点击词语… Tap words to build</span>
-            </div>
-
-            <div class="btn-row">
-                <button type="button" class="action-btn" id="clearBtn">🧹 清空 Clear</button>
-                <button type="button" class="action-btn" id="listenBtn">🔊 朗读 Listen</button>
-                <button type="button" class="action-btn primary" id="checkBtn">✅ 检查 Check</button>
-            </div>
-            <div id="feedbackMessage" class="feedback"></div>
-        </div>
-
-        <div class="minigame-panel">
-            <div class="minigame-header">
-                <span id="miniGameTitle">✨ 西游记 · 翻牌</span>
-                <span id="miniGameHint">Flip cards</span>
-            </div>
-            <div id="minigameContent" class="minigame-content"></div>
-        </div>
-    </div>
+  </div>
 </div>
 
 <script>
-    (function() {
-        const levelData = {
-            1: {
-                grammarHint: "💡 提示：主语 (Subject) + 动词 (Verb) + 宾语 (Object)",
-                sentences: [
-                    {
-                        accepted: ["我吃苹果"],
-                        pinyin: "wǒ chī píngguǒ",
-                        words: [
-                            { hanzi: "我", pinyin: "wǒ" },
-                            { hanzi: "吃", pinyin: "chī" },
-                            { hanzi: "苹果", pinyin: "píngguǒ" }
-                        ]
-                    },
-                    {
-                        accepted: ["他喝水"],
-                        pinyin: "tā hē shuǐ",
-                        words: [
-                            { hanzi: "他", pinyin: "tā" },
-                            { hanzi: "喝", pinyin: "hē" },
-                            { hanzi: "水", pinyin: "shuǐ" }
-                        ]
-                    },
-                    {
-                        accepted: ["我们看电影"],
-                        pinyin: "wǒmen kàn diànyǐng",
-                        words: [
-                            { hanzi: "我们", pinyin: "wǒmen" },
-                            { hanzi: "看", pinyin: "kàn" },
-                            { hanzi: "电影", pinyin: "diànyǐng" }
-                        ]
-                    },
-                    {
-                        accepted: ["妈妈做饭"],
-                        pinyin: "māma zuò fàn",
-                        words: [
-                            { hanzi: "妈妈", pinyin: "māma" },
-                            { hanzi: "做", pinyin: "zuò" },
-                            { hanzi: "饭", pinyin: "fàn" }
-                        ]
-                    },
-                    {
-                        accepted: ["爸爸开车"],
-                        pinyin: "bàba kāi chē",
-                        words: [
-                            { hanzi: "爸爸", pinyin: "bàba" },
-                            { hanzi: "开", pinyin: "kāi" },
-                            { hanzi: "车", pinyin: "chē" }
-                        ]
-                    }
-                ]
-            },
-            2: {
-                grammarHint: "💡 提示：主语 + 时间 (Time) + 动词 + 宾语 （时间也可放最前面）",
-                sentences: [
-                    {
-                        accepted: ["我今天吃苹果", "今天我吃苹果"],
-                        pinyin: "wǒ jīntiān chī píngguǒ",
-                        words: [
-                            { hanzi: "我", pinyin: "wǒ" },
-                            { hanzi: "今天", pinyin: "jīntiān" },
-                            { hanzi: "吃", pinyin: "chī" },
-                            { hanzi: "苹果", pinyin: "píngguǒ" }
-                        ]
-                    },
-                    {
-                        accepted: ["他明天喝水", "明天他喝水"],
-                        pinyin: "tā míngtiān hē shuǐ",
-                        words: [
-                            { hanzi: "他", pinyin: "tā" },
-                            { hanzi: "明天", pinyin: "míngtiān" },
-                            { hanzi: "喝", pinyin: "hē" },
-                            { hanzi: "水", pinyin: "shuǐ" }
-                        ]
-                    },
-                    {
-                        accepted: ["我们后天看电影", "后天我们看电影"],
-                        pinyin: "wǒmen hòutiān kàn diànyǐng",
-                        words: [
-                            { hanzi: "我们", pinyin: "wǒmen" },
-                            { hanzi: "后天", pinyin: "hòutiān" },
-                            { hanzi: "看", pinyin: "kàn" },
-                            { hanzi: "电影", pinyin: "diànyǐng" }
-                        ]
-                    },
-                    {
-                        accepted: ["妈妈昨天做饭", "昨天妈妈做饭"],
-                        pinyin: "māma zuótiān zuò fàn",
-                        words: [
-                            { hanzi: "妈妈", pinyin: "māma" },
-                            { hanzi: "昨天", pinyin: "zuótiān" },
-                            { hanzi: "做", pinyin: "zuò" },
-                            { hanzi: "饭", pinyin: "fàn" }
-                        ]
-                    },
-                    {
-                        accepted: ["爸爸前天开车", "前天爸爸开车"],
-                        pinyin: "bàba qiántiān kāi chē",
-                        words: [
-                            { hanzi: "爸爸", pinyin: "bàba" },
-                            { hanzi: "前天", pinyin: "qiántiān" },
-                            { hanzi: "开", pinyin: "kāi" },
-                            { hanzi: "车", pinyin: "chē" }
-                        ]
-                    }
-                ]
-            },
-            3: {
-                grammarHint: "💡 提示：主语 + 时间 + 地点 (在...) + 动词 + 宾语",
-                sentences: [
-                    {
-                        accepted: ["我今天在学校吃苹果", "今天我在学校吃苹果"],
-                        pinyin: "wǒ jīntiān zài xuéxiào chī píngguǒ",
-                        words: [
-                            { hanzi: "我", pinyin: "wǒ" },
-                            { hanzi: "今天", pinyin: "jīntiān" },
-                            { hanzi: "在学校", pinyin: "zài xuéxiào" },
-                            { hanzi: "吃", pinyin: "chī" },
-                            { hanzi: "苹果", pinyin: "píngguǒ" }
-                        ]
-                    },
-                    {
-                        accepted: ["他明天在厨房喝水", "明天他在厨房喝水"],
-                        pinyin: "tā míngtiān zài chúfáng hē shuǐ",
-                        words: [
-                            { hanzi: "他", pinyin: "tā" },
-                            { hanzi: "明天", pinyin: "míngtiān" },
-                            { hanzi: "在厨房", pinyin: "zài chúfáng" },
-                            { hanzi: "喝", pinyin: "hē" },
-                            { hanzi: "水", pinyin: "shuǐ" }
-                        ]
-                    },
-                    {
-                        accepted: ["我们后天在商场看电影", "后天我们在商场看电影"],
-                        pinyin: "wǒmen hòutiān zài shāngchǎng kàn diànyǐng",
-                        words: [
-                            { hanzi: "我们", pinyin: "wǒmen" },
-                            { hanzi: "后天", pinyin: "hòutiān" },
-                            { hanzi: "在商场", pinyin: "zài shāngchǎng" },
-                            { hanzi: "看", pinyin: "kàn" },
-                            { hanzi: "电影", pinyin: "diànyǐng" }
-                        ]
-                    },
-                    {
-                        accepted: ["妈妈昨天在家里做饭", "昨天妈妈在家里做饭"],
-                        pinyin: "māma zuótiān zài jiālǐ zuò fàn",
-                        words: [
-                            { hanzi: "妈妈", pinyin: "māma" },
-                            { hanzi: "昨天", pinyin: "zuótiān" },
-                            { hanzi: "在家里", pinyin: "zài jiālǐ" },
-                            { hanzi: "做", pinyin: "zuò" },
-                            { hanzi: "饭", pinyin: "fàn" }
-                        ]
-                    },
-                    {
-                        accepted: ["爸爸前天在深圳开车", "前天爸爸在深圳开车"],
-                        pinyin: "bàba qiántiān zài shēnzhèn kāi chē",
-                        words: [
-                            { hanzi: "爸爸", pinyin: "bàba" },
-                            { hanzi: "前天", pinyin: "qiántiān" },
-                            { hanzi: "在深圳", pinyin: "zài shēnzhèn" },
-                            { hanzi: "开", pinyin: "kāi" },
-                            { hanzi: "车", pinyin: "chē" }
-                        ]
-                    }
-                ]
-            }
-        };
+(() => {
+  const levels = {
+    1: {
+      hint:'💡 主语 (Subject) + 动词 (Verb) + 宾语 (Object)',
+      sentences:[
+        {accepted:['我吃苹果'],pinyin:'wǒ chī píngguǒ',words:['我|wǒ','吃|chī','苹果|píngguǒ']},
+        {accepted:['他喝水'],pinyin:'tā hē shuǐ',words:['他|tā','喝|hē','水|shuǐ']},
+        {accepted:['我们看电影'],pinyin:'wǒmen kàn diànyǐng',words:['我们|wǒmen','看|kàn','电影|diànyǐng']},
+        {accepted:['妈妈做饭'],pinyin:'māma zuò fàn',words:['妈妈|māma','做|zuò','饭|fàn']},
+        {accepted:['爸爸开车'],pinyin:'bàba kāi chē',words:['爸爸|bàba','开|kāi','车|chē']}
+      ]
+    },
+    2: {
+      hint:'💡 主语 (S) + 时间 (Time) + 动词 (V) + 宾语 (O)',
+      sentences:[
+        {accepted:['我今天吃苹果'],pinyin:'wǒ jīntiān chī píngguǒ',words:['我|wǒ','今天|jīntiān','吃|chī','苹果|píngguǒ']},
+        {accepted:['他明天喝水'],pinyin:'tā míngtiān hē shuǐ',words:['他|tā','明天|míngtiān','喝|hē','水|shuǐ']},
+        {accepted:['我们后天看电影'],pinyin:'wǒmen hòutiān kàn diànyǐng',words:['我们|wǒmen','后天|hòutiān','看|kàn','电影|diànyǐng']},
+        {accepted:['妈妈昨天做饭'],pinyin:'māma zuótiān zuò fàn',words:['妈妈|māma','昨天|zuótiān','做|zuò','饭|fàn']},
+        {accepted:['爸爸前天开车'],pinyin:'bàba qiántiān kāi chē',words:['爸爸|bàba','前天|qiántiān','开|kāi','车|chē']}
+      ]
+    },
+    3: {
+      hint:'💡 主语 (S) + 时间 (Time) + 地点 (Place) + 动词 (V) + 宾语 (O)',
+      sentences:[
+        {accepted:['我今天在学校吃苹果'],pinyin:'wǒ jīntiān zài xuéxiào chī píngguǒ',words:['我|wǒ','今天|jīntiān','在学校|zài xuéxiào','吃|chī','苹果|píngguǒ']},
+        {accepted:['他明天在厨房喝水'],pinyin:'tā míngtiān zài chúfáng hē shuǐ',words:['他|tā','明天|míngtiān','在厨房|zài chúfáng','喝|hē','水|shuǐ']},
+        {accepted:['我们后天在商场看电影'],pinyin:'wǒmen hòutiān zài shāngchǎng kàn diànyǐng',words:['我们|wǒmen','后天|hòutiān','在商场|zài shāngchǎng','看|kàn','电影|diànyǐng']},
+        {accepted:['妈妈昨天在家里做饭'],pinyin:'māma zuótiān zài jiālǐ zuò fàn',words:['妈妈|māma','昨天|zuótiān','在家里|zài jiālǐ','做|zuò','饭|fàn']},
+        {accepted:['爸爸前天在深圳开车'],pinyin:'bàba qiántiān zài shēnzhèn kāi chē',words:['爸爸|bàba','前天|qiántiān','在深圳|zài shēnzhèn','开|kāi','车|chē']}
+      ]
+    }
+  };
 
-        let currentLevel = 1;
-        let currentSentenceIndex = 0;
-        let currentWords = [];
-        let selectedWords = [];
-        let usedIndices = new Set();
-        let wrongAttempts = 0;
-        let isLockingFlip = false;
-        let nextSentenceTimer = null;
+  let level=1, index=0, chosen=[], used=new Set(), wrong=0, timer=null;
+  const bank=document.querySelector('#wordBank'), slot=document.querySelector('#sentenceSlot'), feedback=document.querySelector('#feedback');
 
-        let miniGameState = {
-            flippedCards: [],
-            treasureFound: false,
-            rocketLaunched: false,
-            cards: null,
-            flipped: null,
-            matched: null
-        };
+  function speak(text){ if(text&&'speechSynthesis' in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='zh-CN';u.rate=.85;speechSynthesis.speak(u);} }
+  function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a}
+  function setFeedback(text,type=''){feedback.textContent=text;feedback.className='feedback'+(type?' '+type:'')}
+  function parsed(word){const [hanzi,pinyin]=word.split('|');return{hanzi,pinyin}}
 
-        const wordBankEl = document.getElementById('wordBank');
-        const sentenceSlotEl = document.getElementById('sentenceSlot');
-        const feedbackEl = document.getElementById('feedbackMessage');
-        const levelIndicator = document.getElementById('levelIndicator');
-        const minigameContent = document.getElementById('minigameContent');
-        const miniGameTitle = document.getElementById('miniGameTitle');
-        const miniGameHint = document.getElementById('miniGameHint');
-        const clearBtn = document.getElementById('clearBtn');
-        const listenBtn = document.getElementById('listenBtn');
-        const checkBtn = document.getElementById('checkBtn');
+  function resetMini(){ if(level===1)cards();else if(level===2)treasure();else rocket(); }
+  function reset(){clearTimeout(timer);chosen=[];used=new Set();wrong=0;setFeedback('');renderBank();renderSlot();resetMini()}
 
-        function speakMandarin(text) {
-            if (!text || !('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'zh-CN';
-            utter.rate = 0.85;
-            window.speechSynthesis.speak(utter);
-        }
+  function renderBank(){
+    bank.innerHTML='';
+    const sentence=levels[level].sentences[index];
+    const words=shuffle(sentence.words);
+    words.forEach((raw,position)=>{
+      const word=parsed(raw), chip=document.createElement('button');
+      chip.type='button';chip.className='chip'+(used.has(position)?' used':'');chip.disabled=used.has(position);
+      chip.innerHTML=`<span class="pinyin">${word.pinyin}</span><span class="hanzi">${word.hanzi}</span>`;
+      chip.onclick=()=>{speak(word.hanzi);chosen.push({...word,position});used.add(position);renderBank();renderSlot();setFeedback('')};
+      bank.appendChild(chip);
+    });
+  }
 
-        function setFeedback(text, type = 'success') {
-            feedbackEl.textContent = text;
-            feedbackEl.classList.remove('error', 'hint');
-            if (type === 'error') feedbackEl.classList.add('error');
-            if (type === 'hint') feedbackEl.classList.add('hint');
-        }
+  function renderSlot(){
+    slot.innerHTML='';
+    if(!chosen.length){slot.innerHTML='<span class="placeholder">点击词语… Tap words to build</span>';return}
+    chosen.forEach((word,i)=>{const el=document.createElement('button');el.type='button';el.className='word';el.innerHTML=`<span class="pinyin">${word.pinyin}</span><span class="hanzi">${word.hanzi}</span>`;el.onclick=()=>{clearTimeout(timer);const removed=chosen.splice(i,1)[0];used.delete(removed.position);renderBank();renderSlot();setFeedback('')};slot.appendChild(el)});
+  }
 
-        document.querySelectorAll('.level-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                clearTimeout(nextSentenceTimer);
-                document.querySelectorAll('.level-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                currentLevel = parseInt(tab.dataset.level, 10);
-                levelIndicator.textContent = `Lv.${currentLevel}`;
-                currentSentenceIndex = 0;
-                resetLevel(true);
-            });
-        });
+  document.querySelectorAll('.tab').forEach(tab=>tab.onclick=()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');level=+tab.dataset.level;index=0;document.querySelector('#levelIndicator').textContent='Lv.'+level;reset()});
+  document.querySelector('#clearBtn').onclick=()=>reset();
+  document.querySelector('#listenBtn').onclick=()=>{const s=levels[level].sentences[index];speak(chosen.length?s.accepted[0]:s.accepted[0])};
+  document.querySelector('#checkBtn').onclick=()=>{
+    clearTimeout(timer);const s=levels[level].sentences[index], answer=chosen.map(x=>x.hanzi).join(''), pinyin=chosen.map(x=>x.pinyin).join(' ');
+    if(!chosen.length){setFeedback('⚠️ 请先点击词库里的词语！ Tap words first.','hint');return}
+    if(s.accepted.includes(answer)){speak(answer);setFeedback(`✅ 正确！“${answer}” (${pinyin}) 太棒了！ ✨`);timer=setTimeout(()=>{index=(index+1)%s.accepted.length;reset()},1700)}
+    else{wrong++;speak(answer);setFeedback(wrong===1?`❌ 再试试！ ${levels[level].hint}`:`❌ 正确参考： “${s.accepted[0]}” (${s.pinyin})`,wrong===1?'hint':'error')}
+  };
 
-        function shuffle(arr) {
-            const a = [...arr];
-            for (let i = a.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-        }
+  let cardState=null;
+  function cards(){
+    document.querySelector('#miniTitle').textContent='🃏 西游记 · 翻牌';document.querySelector('#miniHint').textContent='Match characters';
+    if(!cardState){const data=shuffle(['🐒 孙悟空','🐖 猪八戒','👨‍🦲 唐僧','🐒 孙悟空','🐖 猪八戒','👨‍🦲 唐僧']);cardState={data,flipped:new Array(6).fill(false),matched:new Array(6).fill(false),open:[],locked:false}}
+    const c=document.querySelector('#miniContent');c.innerHTML='';const box=document.createElement('div');box.className='cards';
+    cardState.data.forEach((text,i)=>{const b=document.createElement('button');b.type='button';b.className='card'+(cardState.matched[i]?' matched':'');b.textContent=cardState.flipped[i]||cardState.matched[i]?text:'❓';b.onclick=()=>flip(i);box.appendChild(b)});c.appendChild(box);
+    if(cardState.matched.every(Boolean)){const w=document.createElement('div');w.textContent='🎉 西游记胜利！';c.appendChild(w);const r=document.createElement('button');r.className='action primary';r.textContent='🔄 再玩一次';r.onclick=()=>{cardState=null;cards()};c.appendChild(r)}
+  }
+  function flip(i){const s=cardState;if(s.locked||s.matched[i]||s.flipped[i])return;s.flipped[i]=true;s.open.push(i);if(s.open.length===2){const[a,b]=s.open;if(s.data[a]===s.data[b]){s.matched[a]=s.matched[b]=true;s.open=[]}else{s.locked=true;cards();setTimeout(()=>{s.flipped[a]=s.flipped[b]=false;s.open=[];s.locked=false;cards()},600);return}}cards()}
 
-        function resetLevel(resetMini = false) {
-            clearTimeout(nextSentenceTimer);
-            const level = levelData[currentLevel];
-            const sentenceObj = level.sentences[currentSentenceIndex % level.sentences.length];
-            currentWords = shuffle(sentenceObj.words);
-            selectedWords = [];
-            usedIndices.clear();
-            wrongAttempts = 0;
-            renderWordBank();
-            renderSentenceSlot();
-            setFeedback('');
-            if (resetMini) {
-                resetMiniGameForLevel(currentLevel);
-            }
-        }
+  let treasure=false;
+  function treasure(){document.querySelector('#miniTitle').textContent='☁️ 寻宝';document.querySelector('#miniHint').textContent='Tap the gift box';const c=document.querySelector('#miniContent');c.innerHTML='<div style="font-size:2rem">☁️ ☁️ ☁️ ☁️ ☁️</div>';const b=document.createElement('div');b.className='treasure';b.textContent=treasure?'🏆✨':'🎁❓';b.onclick=()=>{treasure=!treasure;c.innerHTML='';treasureGame()};c.appendChild(b);const m=document.createElement('div');m.textContent=treasure?'✨ 找到宝藏！ ✨':'Click the mystery box!';c.appendChild(m)}
+  function treasureGame(){treasure()}
 
-        function renderWordBank() {
-            wordBankEl.innerHTML = '';
-            currentWords.forEach((wordObj, idx) => {
-                const chip = document.createElement('button');
-                chip.type = 'button';
-                const isUsed = usedIndices.has(idx);
-                chip.className = 'chip' + (isUsed ? ' used' : '');
-                chip.disabled = isUsed;
+  let launched=false;
+  function rocket(){document.querySelector('#miniTitle').textContent='🚀 火星 · 发射';document.querySelector('#miniHint').textContent='Launch to Mars';const c=document.querySelector('#miniContent');c.innerHTML='';const r=document.createElement('div');r.className='rocket';r.innerHTML=launched?'──────▶ <span class="rocket launched">🚀</span> 🔴 火星':'🚀 ────── 🔴 火星';c.appendChild(r);const b=document.createElement('button');b.className='action primary';b.textContent=launched?'🔄 Reset Rocket':'🔥 点火发射 Launch';b.onclick=()=>{launched=!launched;rocket()};c.appendChild(b);const m=document.createElement('div');m.textContent=launched?'🎉 成功抵达火星！':'Ready for liftoff!';c.appendChild(m)}
 
-                const pinyinSpan = document.createElement('span');
-                pinyinSpan.className = 'pinyin';
-                pinyinSpan.textContent = wordObj.pinyin;
-
-                const hanziSpan = document.createElement('span');
-                hanziSpan.className = 'hanzi';
-                hanziSpan.textContent = wordObj.hanzi;
-
-                chip.appendChild(pinyinSpan);
-                chip.appendChild(hanziSpan);
-
-                if (!isUsed) {
-                    chip.addEventListener('click', () => {
-                        speakMandarin(wordObj.hanzi);
-                        selectedWords.push({ wordObj, index: idx });
-                        usedIndices.add(idx);
-                        renderWordBank();
-                        renderSentenceSlot();
-                        setFeedback('');
-                    });
-                }
-                wordBankEl.appendChild(chip);
-            });
-        }
-
-        function renderSentenceSlot() {
-            sentenceSlotEl.innerHTML = '';
-            if (selectedWords.length === 0) {
-                const placeholder = document.createElement('span');
-                placeholder.className = 'placeholder-word';
-                placeholder.textContent = '点击词语… Tap words to build';
-                sentenceSlotEl.appendChild(placeholder);
-            } else {
-                selectedWords.forEach((item, i) => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = 'sentence-word';
-
-                    const pinyinSpan = document.createElement('span');
-                    pinyinSpan.className = 'pinyin';
-                    pinyinSpan.textContent = item.wordObj.pinyin;
-
-                    const hanziSpan = document.createElement('span');
-                    hanziSpan.className = 'hanzi';
-                    hanziSpan.textContent = item.wordObj.hanzi;
-
-                    btn.appendChild(pinyinSpan);
-                    btn.appendChild(hanziSpan);
-
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        clearTimeout(nextSentenceTimer);
-                        const removed = selectedWords.splice(i, 1)[0];
-                        usedIndices.delete(removed.index);
-                        renderWordBank();
-                        renderSentenceSlot();
-                        setFeedback('');
-                    });
-                    sentenceSlotEl.appendChild(btn);
-                });
-            }
-        }
-
-        clearBtn.addEventListener('click', () => {
-            clearTimeout(nextSentenceTimer);
-            selectedWords = [];
-            usedIndices.clear();
-            renderWordBank();
-            renderSentenceSlot();
-            setFeedback('');
-        });
-
-        listenBtn.addEventListener('click', () => {
-            if (selectedWords.length > 0) {
-                const builtHanzi = selectedWords.map(item => item.wordObj.hanzi).join('');
-                speakMandarin(builtHanzi);
-            } else {
-                const level = levelData[currentLevel];
-                const currentSentence = level.sentences[currentSentenceIndex % level.sentences.length];
-                speakMandarin(currentSentence.accepted[0]);
-            }
-        });
-
-        checkBtn.addEventListener('click', () => {
-            clearTimeout(nextSentenceTimer);
-            const level = levelData[currentLevel];
-            const currentSentence = level.sentences[currentSentenceIndex % level.sentences.length];
-            const builtHanzi = selectedWords.map(item => item.wordObj.hanzi).join('');
-            const builtPinyin = selectedWords.map(item => item.wordObj.pinyin).join(' ');
-
-            if (selectedWords.length === 0) {
-                setFeedback('⚠️ 请先点击词库里的词语！ Tap words first.', 'hint');
-                return;
-            }
-
-            if (currentSentence.accepted.includes(builtHanzi)) {
-                speakMandarin(builtHanzi);
-                setFeedback(`✅ 正确！“${builtHanzi}” (${builtPinyin}) 太棒了！ ✨`, 'success');
-                nextSentenceTimer = setTimeout(() => {
-                    currentSentenceIndex = (currentSentenceIndex + 1) % level.sentences.length;
-                    resetLevel(false);
-                }, 1700);
-            } else {
-                wrongAttempts++;
-                speakMandarin(builtHanzi);
-                if (wrongAttempts === 1) {
-                    setFeedback(`❌ 再试试！ ${level.grammarHint}`, 'hint');
-                } else {
-                    setFeedback(
-                        `❌ 正确参考： “${currentSentence.accepted[0]}” (${currentSentence.pinyin})`,
-                        'error'
-                    );
-                }
-            }
-        });
-
-        function resetMiniGameForLevel(level) {
-            isLockingFlip = false;
-            miniGameState = {
-                flippedCards: [],
-                treasureFound: false,
-                rocketLaunched: false,
-                cards: null,
-                flipped: null,
-                matched: null
-            };
-            renderMiniGame(level);
-        }
-
-        function renderMiniGame(level) {
-            if (level === 1) renderFlipCards();
-            else if (level === 2) renderSkyTreasure();
-            else if (level === 3) renderRocketMars();
-        }
-
-        function renderFlipCards() {
-            miniGameTitle.textContent = '🃏 西游记 · 翻牌';
-            miniGameHint.textContent = 'Match characters';
-
-            const cardItems = ['🐒 孙悟空', '🐖 猪八戒', '👨‍🦲 唐僧', '🐒 孙悟空', '🐖 猪八戒', '👨‍🦲 唐僧'];
-            if (!miniGameState.cards) {
-                miniGameState.cards = shuffle(cardItems);
-                miniGameState.flipped = new Array(6).fill(false);
-                miniGameState.matched = new Array(6).fill(false);
-            }
-
-            const container = document.createElement('div');
-            container.style.display = 'grid';
-            container.style.gridTemplateColumns = 'repeat(3, 1fr)';
-            container.style.gap = '12px';
-            container.style.width = '100%';
-            container.style.maxWidth = '380px';
-
-            miniGameState.cards.forEach((cardText, idx) => {
-                const cardBtn = document.createElement('button');
-                cardBtn.type = 'button';
-                cardBtn.style.background = miniGameState.matched[idx] ? '#2d5a2d' : '#1f1338';
-                cardBtn.style.border = '2.5px solid #ffb347';
-                cardBtn.style.borderRadius = '18px';
-                cardBtn.style.height = '96px';
-                cardBtn.style.display = 'flex';
-                cardBtn.style.alignItems = 'center';
-                cardBtn.style.justifyContent = 'center';
-                cardBtn.style.fontSize = '1.35rem';
-                cardBtn.style.fontWeight = '700';
-                cardBtn.style.cursor = 'pointer';
-                cardBtn.style.transition = '0.2s';
-                cardBtn.style.boxShadow = '0 0 20px #ffb34766';
-                cardBtn.style.color = '#fff5d6';
-                cardBtn.textContent = (miniGameState.flipped[idx] || miniGameState.matched[idx]) ? cardText : '❓';
-                cardBtn.addEventListener('click', () => handleFlipCard(idx));
-                container.appendChild(cardBtn);
-            });
-
-            minigameContent.innerHTML = '';
-            minigameContent.appendChild(container);
-
-            if (miniGameState.matched.every(Boolean)) {
-                const winMsg = document.createElement('div');
-                winMsg.className = 'blink-highlight';
-                winMsg.textContent = '🎉 西游记胜利！';
-                minigameContent.appendChild(winMsg);
-
-                const replayBtn = document.createElement('button');
-                replayBtn.type = 'button';
-                replayBtn.className = 'action-btn';
-                replayBtn.textContent = '🔄 再玩一次 Replay';
-                replayBtn.addEventListener('click', () => resetMiniGameForLevel(1));
-                minigameContent.appendChild(replayBtn);
-            }
-        }
-
-        function handleFlipCard(idx) {
-            if (isLockingFlip || miniGameState.matched[idx] || miniGameState.flipped[idx]) return;
-            miniGameState.flipped[idx] = true;
-            miniGameState.flippedCards.push(idx);
-
-            if (miniGameState.flippedCards.length === 2) {
-                const [i1, i2] = miniGameState.flippedCards;
-                if (miniGameState.cards[i1] === miniGameState.cards[i2]) {
-                    miniGameState.matched[i1] = true;
-                    miniGameState.matched[i2] = true;
-                    miniGameState.flippedCards = [];
-                } else {
-                    isLockingFlip = true;
-                    renderFlipCards();
-                    setTimeout(() => {
-                        miniGameState.flipped[i1] = false;
-                        miniGameState.flipped[i2] = false;
-                        miniGameState.flippedCards = [];
-                        isLockingFlip = false;
-                        renderFlipCards();
-                    }, 600);
-                    return;
-                }
-            }
-            renderFlipCards();
-        }
-
-        function renderSkyTreasure() {
-            miniGameTitle.textContent = '☁️ 四天王天 · 寻宝';
-            miniGameHint.textContent = 'Tap the gift box';
-
-            const container = document.createElement('div');
-            container.style.display = 'flex';
-            container.style.flexDirection = 'column';
-            container.style.alignItems = 'center';
-            container.style.gap = '16px';
-
-            const skyText = document.createElement('div');
-            skyText.style.fontSize = '2.2rem';
-            skyText.style.letterSpacing = '6px';
-            skyText.textContent = '☁️ ☁️ ☁️ ☁️ ☁️';
-            skyText.style.color = '#b9d9ff';
-            skyText.style.textShadow = '0 0 18px #aad4ff';
-
-            const treasureDiv = document.createElement('div');
-            treasureDiv.className = 'treasure-box';
-            treasureDiv.textContent = miniGameState.treasureFound ? '🏆✨' : '🎁❓';
-
-            treasureDiv.addEventListener('click', () => {
-                miniGameState.treasureFound = !miniGameState.treasureFound;
-                renderSkyTreasure();
-            });
-
-            const msg = document.createElement('div');
-            if (miniGameState.treasureFound) {
-                msg.className = 'blink-highlight';
-                msg.textContent = '✨ 找到天宫宝藏！ ✨';
-            } else {
-                msg.textContent = 'Click the mystery box above the clouds!';
-            }
-
-            container.appendChild(skyText);
-            container.appendChild(treasureDiv);
-            container.appendChild(msg);
-
-            minigameContent.innerHTML = '';
-            minigameContent.appendChild(container);
-        }
-
-        function renderRocketMars() {
-            miniGameTitle.textContent = '🚀 火星 · 发射';
-            miniGameHint.textContent = 'Launch to Mars';
-
-            const container = document.createElement('div');
-            container.style.display = 'flex';
-            container.style.flexDirection = 'column';
-            container.style.alignItems = 'center';
-            container.style.gap = '18px';
-
-            const marsRow = document.createElement('div');
-            marsRow.className = 'rocket-stage';
-            if (miniGameState.rocketLaunched) {
-                marsRow.innerHTML = '<span>──────▶</span> <span class="rocket-launched">🚀</span> <span>🔴 火星</span>';
-            } else {
-                marsRow.textContent = '🚀 ──────  🔴 火星';
-            }
-
-            const launchBtn = document.createElement('button');
-            launchBtn.type = 'button';
-            launchBtn.className = 'action-btn primary';
-            launchBtn.textContent = miniGameState.rocketLaunched ? '🔄 Reset Rocket' : '🔥 点火发射 Launch';
-
-            launchBtn.addEventListener('click', () => {
-                miniGameState.rocketLaunched = !miniGameState.rocketLaunched;
-                renderRocketMars();
-            });
-
-            const statusMsg = document.createElement('div');
-            if (miniGameState.rocketLaunched) {
-                statusMsg.className = 'blink-highlight';
-                statusMsg.textContent = '🎉 成功抵达火星！Mars Reached!';
-            } else {
-                statusMsg.textContent = 'Ready for liftoff!';
-            }
-
-            container.appendChild(marsRow);
-            container.appendChild(launchBtn);
-            container.appendChild(statusMsg);
-
-            minigameContent.innerHTML = '';
-            minigameContent.appendChild(container);
-        }
-
-        resetLevel(true);
-    })();
+  reset();
+})();
 </script>
 </body>
 </html>
